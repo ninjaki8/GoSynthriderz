@@ -16,6 +16,8 @@ export function GetAdbPath():Promise<string>;
 
 export function GetAdbVersion(arg1:string):Promise<string>;
 
+export function GetDeviceProperties(arg1:string,arg2:string):Promise<main.DeviceDetails>;
+
 export function GetDeviceSerial(arg1:string,arg2:string):Promise<string>;
 
 export function GetDeviceSynthFiles(arg1:string,arg2:string,arg3:string):Promise<Record<string, boolean>>;

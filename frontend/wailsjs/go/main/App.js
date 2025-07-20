@@ -30,6 +30,10 @@ export function GetAdbVersion(arg1) {
   return window['go']['main']['App']['GetAdbVersion'](arg1);
 }
 
+export function GetDeviceProperties(arg1, arg2) {
+  return window['go']['main']['App']['GetDeviceProperties'](arg1, arg2);
+}
+
 export function GetDeviceSerial(arg1, arg2) {
   return window['go']['main']['App']['GetDeviceSerial'](arg1, arg2);
 }

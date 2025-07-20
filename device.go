@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -110,4 +111,115 @@ func (a *App) PushBeatmap(adbPath string, filePath string, deviceSerial string, 
 	}
 
 	return nil
+}
+
+func (a *App) GetDeviceProperties(adbPath string, deviceSerial string) (DeviceDetails, error) {
+	properties := map[string]string{
+		"ro.product.manufacturer": "manufacturer",
+		"ro.product.model":        "model",
+		"ro.serialno":             "serial_no",
+		"ro.product.build.date":   "build_date",
+	}
+
+	details := DeviceDetails{}
+
+	for prop, field := range properties {
+		cmd := exec.Command(adbPath, "-s", deviceSerial, "shell", "getprop", prop)
+		output, err := cmd.Output()
+		if err != nil {
+			fmt.Printf("Failed to get %s: %v\n", prop, err)
+			continue
+		}
+
+		value := strings.TrimSpace(string(output))
+
+		// Set the appropriate field based on the property
+		switch field {
+		case "manufacturer":
+			details.Manufacturer = value
+		case "model":
+			details.Model = value
+		case "serial_no":
+			details.SerialNo = value
+		case "build_date":
+			details.BuildDate = value
+		}
+	}
+
+	// Get battery info
+	battery, err := GetQuestBatteryLevel(adbPath, deviceSerial)
+	if err != nil {
+		fmt.Printf("Failed to get battery level: %v\n", err)
+	}
+	details.BatteryInfo = battery
+
+	// Get storage info
+	storage, err := GetQuestStorageLevel(adbPath, deviceSerial)
+	if err != nil {
+		fmt.Printf("Failed to get storage info: %v\n", err)
+	}
+
+	details.QuestDataUsage.UsedSpace = storage.UsedSpace
+	details.QuestDataUsage.TotalSpace = storage.TotalSpace
+
+	return details, nil
+}
+
+// GetQuestBatteryLevel executes adb command and returns battery info as JSON
+func GetQuestBatteryLevel(adbPath, deviceSerial string) (BatteryInfo, error) {
+	// Execute adb command
+	cmd := exec.Command(adbPath, "-s", deviceSerial, "shell", "dumpsys", "battery")
+	output, err := cmd.Output()
+	if err != nil {
+		return BatteryInfo{}, fmt.Errorf("failed to execute adb command: %v", err)
+	}
+
+	outputStr := string(output)
+
+	// Extract battery level
+	levelRegex := regexp.MustCompile(`level:\s*(\d+)`)
+	matches := levelRegex.FindStringSubmatch(outputStr)
+
+	if len(matches) < 2 {
+		return BatteryInfo{}, nil
+	}
+
+	battery := BatteryInfo{
+		BatteryLevel: strings.TrimSpace(matches[1]),
+	}
+
+	return battery, nil
+}
+
+func GetQuestStorageLevel(adbPath, deviceSerial string) (*QuestDataUsage, error) {
+	cmd := exec.Command(adbPath, "-s", deviceSerial, "shell", "df", "-h", "/data")
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute adb command: %w", err)
+	}
+
+	scanner := bufio.NewScanner(strings.NewReader(string(output)))
+
+	// Skip header
+	if !scanner.Scan() {
+		return nil, fmt.Errorf("no output from df command")
+	}
+
+	// Parse data line
+	if !scanner.Scan() {
+		return nil, fmt.Errorf("no data line found")
+	}
+
+	line := strings.TrimSpace(scanner.Text())
+	re := regexp.MustCompile(`^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+)$`)
+	matches := re.FindStringSubmatch(line)
+
+	if len(matches) != 7 {
+		return nil, fmt.Errorf("failed to parse df output")
+	}
+
+	return &QuestDataUsage{
+		UsedSpace:  matches[3], // Used column
+		TotalSpace: matches[2], // Size column
+	}, nil
 }

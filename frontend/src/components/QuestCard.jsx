@@ -1,18 +1,13 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Headphones } from "lucide-react";
+import { useUsbConnection } from "../hooks/useUsbConnection";
+import { useQuestDeviceDetails } from "../hooks/useQuestDeviceDetails";
 
-export default function QuestCard() {
-  const [questStatus, setQuestStatus] = useState(true);
+export default function QuestCard({ adbPath, deviceSerial }) {
   const [isQuestExpanded, setIsQuestExpanded] = useState(false);
+  const { questStatus } = useUsbConnection();
+  const { questProperties } = useQuestDeviceDetails(adbPath, questStatus, deviceSerial);
 
-  const questData = {
-    model: "Quest_3",
-    serial: "2G0YC1ZF8T0F3J",
-    firmware: "v60.0.0.174.425.342342342",
-    batteryLevel: 78,
-    storageUsed: "45.2 GB",
-    storageTotal: "128 GB",
-  };
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300">
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6 text-white">
@@ -22,7 +17,7 @@ export default function QuestCard() {
               <Headphones className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">Quest 3</h2>
+              <h2 className="text-xl font-bold">{questProperties.model}</h2>
               <p className="text-purple-100 text-sm">VR Headset</p>
             </div>
           </div>
@@ -36,19 +31,22 @@ export default function QuestCard() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-gray-600">Model:</span>
-            <span className="font-medium">{questData.model}</span>
+            <span className="font-medium">{questProperties.model}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-gray-600">Serial:</span>
-            <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">{questData.serial}</span>
+            <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">{questProperties.serial_no}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-gray-600">Battery:</span>
             <div className="flex items-center space-x-2">
               <div className="w-16 bg-gray-200 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full transition-all duration-300" style={{ width: `${questData.batteryLevel}%` }}></div>
+                <div
+                  className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${questProperties.battery_level}%` }}
+                ></div>
               </div>
-              <span className="text-sm font-medium">{questData.batteryLevel}%</span>
+              <span className="text-sm font-medium">{questProperties.battery_level}%</span>
             </div>
           </div>
         </div>
@@ -64,10 +62,10 @@ export default function QuestCard() {
             <div className="mt-4 space-y-3 text-sm">
               <div className="bg-gray-50 p-3 rounded-lg space-y-2">
                 <div>
-                  <span className="font-medium">Firmware:</span> {questData.firmware}
+                  <span className="font-medium">Manufacturer:</span> {questProperties.manufacturer}
                 </div>
                 <div>
-                  <span className="font-medium">Storage:</span> {questData.storageUsed} / {questData.storageTotal}
+                  <span className="font-medium">Storage:</span> {questProperties.used_space} / {questProperties.total_space}
                 </div>
               </div>
             </div>

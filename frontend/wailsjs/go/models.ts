@@ -52,6 +52,30 @@ export namespace main {
 		    return a;
 		}
 	}
+	export class DeviceDetails {
+	    manufacturer: string;
+	    model: string;
+	    serial_no: string;
+	    build_date: string;
+	    battery_level: string;
+	    used_space: string;
+	    total_space: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DeviceDetails(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.manufacturer = source["manufacturer"];
+	        this.model = source["model"];
+	        this.serial_no = source["serial_no"];
+	        this.build_date = source["build_date"];
+	        this.battery_level = source["battery_level"];
+	        this.used_space = source["used_space"];
+	        this.total_space = source["total_space"];
+	    }
+	}
 
 }
 

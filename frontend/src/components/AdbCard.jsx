@@ -1,33 +1,10 @@
-import { useState, useEffect } from "react";
-import { GetAdbPath, GetAdbVersion, StartAdbServer } from "../../wailsjs/go/main/App";
-import { parseAdbVersion } from "../helpers/adbVersionParser";
+import { useState } from "react";
+import { useAdbInitialization } from "../hooks/useAdbInitialization";
 import { Server, Wifi, WifiOff, ChevronDown, ChevronUp, Monitor } from "lucide-react";
 
-export default function AdbCard() {
-  const [adbPath, setAdbPath] = useState("");
-  const [adbVersion, setAdbVersion] = useState("");
-  const [adbStatus, setAdbStatus] = useState(true);
+export default function AdbCard({ adbPath, setErrors }) {
   const [isAdbExpanded, setIsAdbExpanded] = useState(false);
-
-  useEffect(() => {
-    const initializeAdb = async () => {
-      try {
-        const path = await GetAdbPath();
-        setAdbPath(path);
-
-        if (path) {
-          await StartAdbServer(path);
-          const version = await GetAdbVersion(path);
-          const adbVersionData = parseAdbVersion(version);
-          setAdbVersion(adbVersionData);
-        }
-      } catch (error) {
-        console.error("Error initializing adb functions", error);
-      }
-    };
-
-    initializeAdb();
-  }, []);
+  const { adbVersion, adbStatus } = useAdbInitialization(adbPath, setErrors);
 
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300">
