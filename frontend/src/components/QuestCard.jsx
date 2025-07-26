@@ -1,12 +1,8 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Headphones } from "lucide-react";
-import { useUsbConnection } from "../hooks/useUsbConnection";
-import { useQuestDeviceDetails } from "../hooks/useQuestDeviceDetails";
 
-export default function QuestCard({ adbPath, deviceSerial }) {
+export default function QuestCard({ questStatus, questProperties }) {
   const [isQuestExpanded, setIsQuestExpanded] = useState(false);
-  const { questStatus } = useUsbConnection();
-  const { questProperties } = useQuestDeviceDetails(adbPath, questStatus, deviceSerial);
 
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300">

@@ -14,26 +14,13 @@ export const useQuestDeviceDetails = (adbPath, questStatus, deviceSerial) => {
       }
     };
 
-    let interval;
-
-    if (adbPath && questStatus) {
-      // Get initial data
+    if (questStatus && deviceSerial !== "") {
       getQuestDeviceDetails();
-
-      // Set up interval only when conditions are met
-      interval = setInterval(getQuestDeviceDetails, 30000);
     } else {
       // Clear device info when USB disconnects
       setQuestProperties({});
     }
-
-    // Cleanup function
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [adbPath, questStatus, deviceSerial]);
+  }, [questStatus, deviceSerial]);
 
   return {
     questProperties,

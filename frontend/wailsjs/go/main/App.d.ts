@@ -24,6 +24,8 @@ export function GetDeviceSynthFiles(arg1:string,arg2:string,arg3:string):Promise
 
 export function GetQuestDeviceModel():Promise<string>;
 
+export function GetSynthFilesCount(arg1:string,arg2:string,arg3:string):Promise<number>;
+
 export function GetSynthridersFolder():Promise<string>;
 
 export function IsQuestUsbConnected():Promise<boolean>;

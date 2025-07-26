@@ -46,6 +46,10 @@ export function GetQuestDeviceModel() {
   return window['go']['main']['App']['GetQuestDeviceModel']();
 }
 
+export function GetSynthFilesCount(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GetSynthFilesCount'](arg1, arg2, arg3);
+}
+
 export function GetSynthridersFolder() {
   return window['go']['main']['App']['GetSynthridersFolder']();
 }

@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -64,6 +65,28 @@ func (a *App) AdbRemoteDirExists(adbPath string, serial, remotePath string) bool
 	}
 
 	return false
+}
+
+// count synth files
+func (a *App) GetSynthFilesCount(adbPath string, folderPath string, serial string) int {
+	// Run the remote shell command that counts files on the device
+	cmd := exec.Command(adbPath, "-s", "2G0YC1ZF8T0F3J", "shell", "ls /sdcard/SynthRidersUC/CustomSongs/ | wc -l")
+	// Run the command and capture output
+	out, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Error executing command:", err)
+		return 0
+	}
+
+	// Convert output to int
+	outputStr := strings.TrimSpace(string(out))
+	count, err := strconv.Atoi(outputStr)
+	if err != nil {
+		fmt.Println("Error parsing output:", err)
+		return 0
+	}
+
+	return count
 }
 
 // getDeviceSynthFiles creates a map of file names from the contents of a specified folder on the connected device.

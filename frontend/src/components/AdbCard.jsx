@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useAdbInitialization } from "../hooks/useAdbInitialization";
 import { Server, Wifi, WifiOff, ChevronDown, ChevronUp, Monitor } from "lucide-react";
 
-export default function AdbCard({ adbPath, setErrors }) {
+export default function AdbCard({ adbPath }) {
   const [isAdbExpanded, setIsAdbExpanded] = useState(false);
-  const { adbVersion, adbStatus } = useAdbInitialization(adbPath, setErrors);
+  const { adbVersion, adbStatus } = useAdbInitialization(adbPath);
 
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300">

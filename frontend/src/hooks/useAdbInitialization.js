@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { GetAdbVersion, StartAdbServer } from "../../wailsjs/go/main/App";
 import { parseAdbVersion } from "../helpers/adbVersionParser";
 
-export const useAdbInitialization = (adbPath, setErrors) => {
+export const useAdbInitialization = (adbPath) => {
   const [adbVersion, setAdbVersion] = useState("");
   const [adbStatus, setAdbStatus] = useState(false);
 
@@ -12,8 +12,6 @@ export const useAdbInitialization = (adbPath, setErrors) => {
       if (!adbPath) {
         return;
       }
-
-      const newErrors = {};
 
       try {
         // Start ADB server
@@ -28,19 +26,10 @@ export const useAdbInitialization = (adbPath, setErrors) => {
           setAdbStatus(true);
         } else {
           setAdbStatus(false);
-          newErrors.adbVersion = "Failed to get ADB version";
         }
       } catch (error) {
         console.error("Error initializing adb functions", error);
-        newErrors.adbVersion = "Failed to initialize ADB: " + error;
         setAdbStatus(false);
-      }
-
-      if (Object.keys(newErrors).length > 0) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          ...newErrors,
-        }));
       }
     };
 

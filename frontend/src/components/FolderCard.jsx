@@ -1,16 +1,6 @@
-import { useState } from "react";
 import { FolderOpen, FolderX, RefreshCw, CheckCircle, AlertCircle } from "lucide-react";
 
-export default function FolderCard() {
-  const [folderStatus, setFolderStatus] = useState(true);
-
-  const folderData = {
-    name: "CustomSongs",
-    path: "/sdcard/Android/data/com.beatgames.beatsaber/files/songs",
-    lastChecked: new Date().toLocaleTimeString(),
-    fileCount: 247,
-  };
-
+export default function FolderCard({ folderStatus, folderData }) {
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300">
       <div className="bg-gradient-to-r from-green-600 to-teal-600 p-6 text-white">
@@ -52,10 +42,7 @@ export default function FolderCard() {
               </div>
             </div>
           )}
-          <button
-            onClick={() => setFolderStatus(!folderStatus)}
-            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors"
-          >
+          <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors">
             <RefreshCw className="w-4 h-4 inline mr-2" />
             Refresh Check
           </button>
