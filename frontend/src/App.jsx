@@ -1,3 +1,6 @@
+import { useState } from "react";
+import "./App.css";
+
 import AdbCard from "./components/AdbCard";
 import QuestCard from "./components/QuestCard";
 import FolderCard from "./components/FolderCard";
@@ -7,13 +10,13 @@ import { useUsbConnection } from "./hooks/useUsbConnection";
 import { useQuestDeviceDetails } from "./hooks/useQuestDeviceDetails";
 import { useAdbPath } from "./hooks/useAdbPath";
 import { useFolder } from "./hooks/useFolder";
-import "./App.css";
 
 function App() {
   const { adbPath, adbStatus } = useAdbPath();
   const { questStatus, deviceSerial } = useUsbConnection(adbPath);
   const { questProperties } = useQuestDeviceDetails(adbPath, questStatus, deviceSerial);
   const { folderStatus, folderData } = useFolder(adbPath, questStatus, deviceSerial);
+  const [start, setStart] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -34,11 +37,11 @@ function App() {
           <AdbCard adbPath={adbPath} />
           <QuestCard questStatus={questStatus} questProperties={questProperties} />
           <FolderCard folderStatus={folderStatus} folderData={folderData} />
-          <SyncCard adbStatus={adbStatus} questStatus={questStatus} folderStatus={folderStatus} />
+          <SyncCard adbStatus={adbStatus} questStatus={questStatus} folderStatus={folderStatus} start={start} setStart={setStart} />
         </div>
 
         {/* Terminal Output */}
-        <TerminalOutput />
+        <TerminalOutput start={start} setStart={setStart} />
       </div>
     </div>
   );

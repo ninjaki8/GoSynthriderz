@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RefreshCw, Play, AlertCircle } from "lucide-react";
 
-export default function SyncCard({ adbStatus, questStatus, folderStatus }) {
+export default function SyncCard({ adbStatus, questStatus, folderStatus, start, setStart }) {
   const [isSyncing, setIsSyncing] = useState(false);
+
+  useEffect(() => {
+    if (!start) {
+      setIsSyncing(false);
+    }
+  }, [start]);
 
   const handleSync = async () => {
     if (isSyncing) return;
 
     setIsSyncing(true);
-    setIsSyncing(false);
+    setStart(true);
   };
 
   return (

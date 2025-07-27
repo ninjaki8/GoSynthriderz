@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Terminal } from "lucide-react";
 
-export default function TerminalOutput() {
+export default function TerminalOutput({ start, setStart }) {
   const [terminalOutput, setTerminalOutput] = useState([]);
   const terminalRef = useRef(null);
 
@@ -14,6 +14,47 @@ export default function TerminalOutput() {
 
   const clearTerminal = () => {
     setTerminalOutput([]);
+  };
+
+  useEffect(() => {
+    if (!start) return;
+
+    const handleSync = async () => {
+      setTerminalOutput([]);
+
+      // Simulate sync process
+      const syncSteps = [
+        { text: "Initializing sync process...", delay: 500 },
+        { text: "Checking ADB connection...", delay: 800 },
+        { text: "✓ ADB server is running", delay: 600, type: "success" },
+        { text: "Detecting Quest 3 device...", delay: 1000 },
+        { text: "✓ Quest 3 device found: 2G0YC1ZF8T0F3J", delay: 700, type: "success" },
+        { text: "Scanning CustomSongs folder...", delay: 900 },
+        { text: "✓ Found 247 custom songs", delay: 600, type: "success" },
+        { text: "Starting file synchronization...", delay: 800 },
+        { text: "Copying song files to device...", delay: 1200 },
+        { text: "Progress: 25%", delay: 800 },
+        { text: "Progress: 50%", delay: 800 },
+        { text: "Progress: 75%", delay: 800 },
+        { text: "Progress: 100%", delay: 800 },
+        { text: "✓ Sync completed successfully!", delay: 600, type: "success" },
+        { text: "247 songs synchronized to Quest 3", delay: 400, type: "info" },
+      ];
+
+      for (const step of syncSteps) {
+        await new Promise((resolve) => setTimeout(resolve, step.delay));
+        addToTerminal(step.text, step.type || "info");
+      }
+
+      setStart(false);
+    };
+
+    handleSync();
+  }, [start]);
+
+  const addToTerminal = (text, type = "info") => {
+    const timestamp = new Date().toLocaleTimeString();
+    setTerminalOutput((prev) => [...prev, { text, type, timestamp }]);
   };
 
   return (
