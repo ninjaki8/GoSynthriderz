@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useAdbInitialization } from "../hooks/useAdbInitialization";
-import { Server, Wifi, WifiOff, ChevronDown, ChevronUp, Monitor } from "lucide-react";
+import { Server, ChevronDown, ChevronUp, Monitor, CheckLine, CircleX } from "lucide-react";
+import { InstallAdbWindows } from "../../wailsjs/go/main/App";
 
-export default function AdbCard({ adbPath }) {
+export default function AdbCard({ adbPath, setAdbPath }) {
   const [isAdbExpanded, setIsAdbExpanded] = useState(false);
   const { adbVersion, adbStatus } = useAdbInitialization(adbPath);
 
+  const installAdb = async () => {
+    const installPath = await InstallAdbWindows();
+    setAdbPath(installPath);
+  };
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300">
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
@@ -28,17 +33,19 @@ export default function AdbCard({ adbPath }) {
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            {adbStatus ? <Wifi className="w-5 h-5 text-green-500" /> : <WifiOff className="w-5 h-5 text-red-500" />}
-            <span className={`font-semibold ${adbStatus ? "text-green-600" : "text-red-600"}`}>{adbStatus ? "Connected" : "Disconnected"}</span>
+            {adbStatus ? <CheckLine className="w-5 h-5 text-green-500" /> : <CircleX className="w-5 h-5 text-red-500" />}
+            <span className={`font-semibold ${adbPath !== "" ? "text-green-600" : "text-red-600"}`}>
+              {adbPath !== "" ? "Adb Installed" : "Adb Not Found"}
+            </span>
           </div>
-          <button
-            onClick={() => setAdbStatus(!adbStatus)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              adbStatus ? "bg-red-100 text-red-700 hover:bg-red-200" : "bg-green-100 text-green-700 hover:bg-green-200"
-            }`}
-          >
-            {adbStatus ? "Disconnect" : "Connect"}
-          </button>
+          {adbPath === "" && (
+            <button
+              onClick={() => installAdb()}
+              className="px-4 py-2 rounded-lg font-medium cursor-pointer bg-green-100 text-green-700 hover:bg-green-200"
+            >
+              Install
+            </button>
+          )}
         </div>
         <div className="border-t pt-4">
           <button

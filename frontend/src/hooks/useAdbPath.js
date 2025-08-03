@@ -25,6 +25,7 @@ export const useAdbPath = () => {
 
   return {
     adbPath,
+    setAdbPath,
     adbStatus,
   };
 };

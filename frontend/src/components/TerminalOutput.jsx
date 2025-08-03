@@ -1,10 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import { EventsOn, EventsOff } from "../../wailsjs/runtime/runtime";
+import { useEffect, useRef } from "react";
 import { Terminal } from "lucide-react";
 import { GetDeviceSynthFiles, FetchPage, FetchAllPages, SyncNewBeatmaps } from "../../wailsjs/go/main/App";
 
-export default function TerminalOutput({ start, setStart, adbPath, deviceSerial, customSongsDir }) {
-  const [terminalOutput, setTerminalOutput] = useState([]);
+export default function TerminalOutput({ start, setStart, adbPath, deviceSerial, customSongsDir, terminalOutput, setTerminalOutput }) {
   const terminalRef = useRef(null);
 
   // Auto-scroll terminal to bottom
@@ -16,12 +14,6 @@ export default function TerminalOutput({ start, setStart, adbPath, deviceSerial,
 
   useEffect(() => {
     if (!start) return;
-
-    // Set up event listener first
-    EventsOn("log", (text, type = "success") => {
-      const timestamp = new Date().toLocaleTimeString();
-      setTerminalOutput((prev) => [...prev, { text, type, timestamp }]);
-    });
 
     const startExecution = async () => {
       // clear output
@@ -42,11 +34,6 @@ export default function TerminalOutput({ start, setStart, adbPath, deviceSerial,
     };
 
     startExecution();
-
-    // Cleanup function to remove event listener
-    return () => {
-      EventsOff("log");
-    };
   }, [start]);
 
   const clearTerminal = () => {

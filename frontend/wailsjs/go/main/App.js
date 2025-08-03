@@ -54,6 +54,10 @@ export function GetSynthridersFolder() {
   return window['go']['main']['App']['GetSynthridersFolder']();
 }
 
+export function InstallAdbWindows() {
+  return window['go']['main']['App']['InstallAdbWindows']();
+}
+
 export function IsQuestUsbConnected() {
   return window['go']['main']['App']['IsQuestUsbConnected']();
 }

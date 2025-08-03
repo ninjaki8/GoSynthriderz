@@ -18,7 +18,7 @@ func (a *App) GetAdbPath() string {
 		return adbPath
 	}
 
-	return "adb not found.."
+	return ""
 }
 
 // Get adb version

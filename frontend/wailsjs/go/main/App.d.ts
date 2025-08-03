@@ -28,6 +28,8 @@ export function GetSynthFilesCount(arg1:string,arg2:string,arg3:string):Promise<
 
 export function GetSynthridersFolder():Promise<string>;
 
+export function InstallAdbWindows():Promise<string>;
+
 export function IsQuestUsbConnected():Promise<boolean>;
 
 export function PushBeatmap(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
