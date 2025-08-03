@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -18,6 +19,10 @@ func (a *App) GetDeviceSerial(adbPath string, deviceModel string) (string, error
 	time.Sleep(2 * time.Second)
 
 	cmd := exec.Command(adbPath, "devices", "-l")
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+	}
 	output, err := cmd.Output()
 	if err != nil {
 		return "", err
@@ -57,6 +62,10 @@ func (a *App) GetDeviceSerial(adbPath string, deviceModel string) (string, error
 // adbRemoteDirExists checks whether a directory exists on the device at the given path.
 func (a *App) AdbRemoteDirExists(adbPath string, serial, remotePath string) bool {
 	cmd := exec.Command(adbPath, "-s", serial, "shell", "ls", "-d", remotePath)
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+	}
 	err := cmd.Run()
 
 	// If no error, directory exists
@@ -71,6 +80,11 @@ func (a *App) AdbRemoteDirExists(adbPath string, serial, remotePath string) bool
 func (a *App) GetSynthFilesCount(adbPath string, folderPath string, serial string) int {
 	// Run the remote shell command that counts files on the device
 	cmd := exec.Command(adbPath, "-s", "2G0YC1ZF8T0F3J", "shell", "ls /sdcard/SynthRidersUC/CustomSongs/ | wc -l")
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+	}
+
 	// Run the command and capture output
 	out, err := cmd.Output()
 	if err != nil {
@@ -94,6 +108,10 @@ func (a *App) GetDeviceSynthFiles(adbPath string, folderPath string, serial stri
 	a.EventLog("Fetching existing beatmaps...")
 
 	cmd := exec.Command(adbPath, "-s", serial, "shell", "ls", folderPath)
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+	}
 	output, err := cmd.Output()
 	if err != nil {
 		fmt.Printf("Error listing folder %s: %v\n", folderPath, err)
@@ -121,7 +139,10 @@ func (a *App) PushBeatmap(adbPath string, filePath string, deviceSerial string, 
 
 	// Push to device
 	cmd := exec.Command(adbPath, "-s", deviceSerial, "push", filePath, remoteDir)
-
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+	}
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("adb push failed: %v\nOutput: %s", err, string(output))
@@ -148,6 +169,10 @@ func (a *App) GetDeviceProperties(adbPath string, deviceSerial string) (DeviceDe
 
 	for prop, field := range properties {
 		cmd := exec.Command(adbPath, "-s", deviceSerial, "shell", "getprop", prop)
+		cmd.SysProcAttr = &syscall.SysProcAttr{
+			HideWindow:    true,
+			CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+		}
 		output, err := cmd.Output()
 		if err != nil {
 			fmt.Printf("Failed to get %s: %v\n", prop, err)
@@ -192,6 +217,10 @@ func (a *App) GetDeviceProperties(adbPath string, deviceSerial string) (DeviceDe
 func GetQuestBatteryLevel(adbPath, deviceSerial string) (BatteryInfo, error) {
 	// Execute adb command
 	cmd := exec.Command(adbPath, "-s", deviceSerial, "shell", "dumpsys", "battery")
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+	}
 	output, err := cmd.Output()
 	if err != nil {
 		return BatteryInfo{}, fmt.Errorf("failed to execute adb command: %v", err)
@@ -216,6 +245,10 @@ func GetQuestBatteryLevel(adbPath, deviceSerial string) (BatteryInfo, error) {
 
 func GetQuestStorageLevel(adbPath, deviceSerial string) (*QuestDataUsage, error) {
 	cmd := exec.Command(adbPath, "-s", deviceSerial, "shell", "df", "-h", "/data")
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+	}
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute adb command: %w", err)

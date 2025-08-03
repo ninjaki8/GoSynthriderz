@@ -21,17 +21,6 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-gray-600">Monitor and manage your Quest 3 development environment</p>
-
-          {/* DEBUG */}
-          <div>{adbPath || "adb bot found"}</div>
-          <div>Serial: {deviceSerial || "No device connected"}</div>
-          <div>adb {adbStatus && "online"}</div>
-        </div>
-
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <AdbCard adbPath={adbPath} />

@@ -5,10 +5,15 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"syscall"
 )
 
 func IsPluggedInWindows() bool {
 	cmd := exec.Command("powershell.exe", "-Command", `Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -like 'USB\VID_*' } | Select-Object -ExpandProperty InstanceId`)
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
+	}
 	output, err := cmd.Output()
 	if err != nil {
 		fmt.Println("Error running PowerShell:", err)

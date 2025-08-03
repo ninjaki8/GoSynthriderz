@@ -19,11 +19,7 @@ func main() {
 	err := wails.Run(&options.App{
 		Title:         "GoSynthriderz",
 		Width:         1280,
-		Height:        1024,
-		MinWidth:      1280,
-		MaxWidth:      1280,
-		MinHeight:     1024,
-		MaxHeight:     1024,
+		Height:        930,
 		DisableResize: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
