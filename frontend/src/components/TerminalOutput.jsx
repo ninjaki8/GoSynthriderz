@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { EventsOn, EventsOff } from "../../wailsjs/runtime/runtime";
 import { Terminal } from "lucide-react";
+import { GetDeviceSynthFiles, FetchPage, FetchAllPages, SyncNewBeatmaps } from "../../wailsjs/go/main/App";
 
-export default function TerminalOutput({ start, setStart }) {
+export default function TerminalOutput({ start, setStart, adbPath, deviceSerial, customSongsDir }) {
   const [terminalOutput, setTerminalOutput] = useState([]);
   const terminalRef = useRef(null);
 
@@ -12,49 +14,43 @@ export default function TerminalOutput({ start, setStart }) {
     }
   }, [terminalOutput]);
 
-  const clearTerminal = () => {
-    setTerminalOutput([]);
-  };
-
   useEffect(() => {
     if (!start) return;
 
-    const handleSync = async () => {
+    // Set up event listener first
+    EventsOn("log", (text, type = "success") => {
+      const timestamp = new Date().toLocaleTimeString();
+      setTerminalOutput((prev) => [...prev, { text, type, timestamp }]);
+    });
+
+    const startExecution = async () => {
+      // clear output
       setTerminalOutput([]);
 
-      // Simulate sync process
-      const syncSteps = [
-        { text: "Initializing sync process...", delay: 500 },
-        { text: "Checking ADB connection...", delay: 800 },
-        { text: "✓ ADB server is running", delay: 600, type: "success" },
-        { text: "Detecting Quest 3 device...", delay: 1000 },
-        { text: "✓ Quest 3 device found: 2G0YC1ZF8T0F3J", delay: 700, type: "success" },
-        { text: "Scanning CustomSongs folder...", delay: 900 },
-        { text: "✓ Found 247 custom songs", delay: 600, type: "success" },
-        { text: "Starting file synchronization...", delay: 800 },
-        { text: "Copying song files to device...", delay: 1200 },
-        { text: "Progress: 25%", delay: 800 },
-        { text: "Progress: 50%", delay: 800 },
-        { text: "Progress: 75%", delay: 800 },
-        { text: "Progress: 100%", delay: 800 },
-        { text: "✓ Sync completed successfully!", delay: 600, type: "success" },
-        { text: "247 songs synchronized to Quest 3", delay: 400, type: "info" },
-      ];
+      // Get all device files from custom songs dir
+      const currentFiles = await GetDeviceSynthFiles(adbPath, customSongsDir, deviceSerial);
 
-      for (const step of syncSteps) {
-        await new Promise((resolve) => setTimeout(resolve, step.delay));
-        addToTerminal(step.text, step.type || "info");
-      }
+      // Get all synthriderz.com api listings
+      const firstPage = await FetchPage(1);
+      const totalPages = firstPage.pageCount;
+      const allPages = await FetchAllPages(totalPages);
+
+      // Sync new beatmaps
+      await SyncNewBeatmaps(allPages, currentFiles, adbPath, deviceSerial);
 
       setStart(false);
     };
 
-    handleSync();
+    startExecution();
+
+    // Cleanup function to remove event listener
+    return () => {
+      EventsOff("log");
+    };
   }, [start]);
 
-  const addToTerminal = (text, type = "info") => {
-    const timestamp = new Date().toLocaleTimeString();
-    setTerminalOutput((prev) => [...prev, { text, type, timestamp }]);
+  const clearTerminal = () => {
+    setTerminalOutput([]);
   };
 
   return (

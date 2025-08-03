@@ -15,7 +15,7 @@ function App() {
   const { adbPath, adbStatus } = useAdbPath();
   const { questStatus, deviceSerial } = useUsbConnection(adbPath);
   const { questProperties } = useQuestDeviceDetails(adbPath, questStatus, deviceSerial);
-  const { folderStatus, folderData } = useFolder(adbPath, questStatus, deviceSerial);
+  const { customSongsDir, folderStatus, folderData } = useFolder(adbPath, questStatus, deviceSerial);
   const [start, setStart] = useState(false);
 
   return (
@@ -41,7 +41,7 @@ function App() {
         </div>
 
         {/* Terminal Output */}
-        <TerminalOutput start={start} setStart={setStart} />
+        <TerminalOutput start={start} setStart={setStart} adbPath={adbPath} deviceSerial={deviceSerial} customSongsDir={customSongsDir} />
       </div>
     </div>
   );

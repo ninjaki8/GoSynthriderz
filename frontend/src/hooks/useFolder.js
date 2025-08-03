@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { AdbRemoteDirExists, GetSynthridersFolder, GetSynthFilesCount } from "../../wailsjs/go/main/App";
 
 export const useFolder = (adbPath, questStatus, deviceSerial) => {
+  const [customSongsDir, setCustomSongsDir] = useState("");
   const [folderStatus, setFolderStatus] = useState(false);
   const [folderData, setFolderData] = useState({});
 
@@ -12,6 +13,7 @@ export const useFolder = (adbPath, questStatus, deviceSerial) => {
       try {
         const folder = await GetSynthridersFolder();
         const customSongs = await AdbRemoteDirExists(adbPath, deviceSerial, folder);
+        setCustomSongsDir(folder);
         setFolderStatus(customSongs);
 
         let countFiles = 0;
@@ -37,5 +39,6 @@ export const useFolder = (adbPath, questStatus, deviceSerial) => {
   return {
     folderData,
     folderStatus,
+    customSongsDir,
   };
 };
