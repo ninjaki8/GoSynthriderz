@@ -18,8 +18,8 @@ func main() {
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:         "GoSynthriderz",
-		Width:         1280,
-		Height:        930,
+		Width:         1366,
+		Height:        1024,
 		DisableResize: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,

@@ -20,11 +20,11 @@ function App() {
   const { terminalOutput, setTerminalOutput } = useTerminal(start, setStart, adbPath, customSongsDir, deviceSerial);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="h-screen bg-gradient-to-br from-gray-800 via-gray-900 to-black overflow-hidden">
+      <div className="mx-auto">
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <AdbCard adbPath={adbPath} setAdbPath={setAdbPath} />
+        <div className="grid grid-cols-4 gap-1">
+          <AdbCard adbStatus={adbStatus} adbPath={adbPath} setAdbPath={setAdbPath} />
           <QuestCard questStatus={questStatus} questProperties={questProperties} />
           <FolderCard folderStatus={folderStatus} folderData={folderData} />
           <SyncCard adbStatus={adbStatus} questStatus={questStatus} folderStatus={folderStatus} start={start} setStart={setStart} />
