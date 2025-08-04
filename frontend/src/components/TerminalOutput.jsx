@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Terminal } from "lucide-react";
-import { GetDeviceSynthFiles, FetchPage, FetchAllPages, SyncNewBeatmaps } from "../../wailsjs/go/main/App";
 
-export default function TerminalOutput({ start, setStart, adbPath, deviceSerial, customSongsDir, terminalOutput, setTerminalOutput }) {
+export default function TerminalOutput({ terminalOutput, setTerminalOutput }) {
   const terminalRef = useRef(null);
 
   // Auto-scroll terminal to bottom
@@ -11,30 +10,6 @@ export default function TerminalOutput({ start, setStart, adbPath, deviceSerial,
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
   }, [terminalOutput]);
-
-  useEffect(() => {
-    if (!start) return;
-
-    const startExecution = async () => {
-      // clear output
-      setTerminalOutput([]);
-
-      // Get all device files from custom songs dir
-      const currentFiles = await GetDeviceSynthFiles(adbPath, customSongsDir, deviceSerial);
-
-      // Get all synthriderz.com api listings
-      const firstPage = await FetchPage(1);
-      const totalPages = firstPage.pageCount;
-      const allPages = await FetchAllPages(totalPages);
-
-      // Sync new beatmaps
-      await SyncNewBeatmaps(allPages, currentFiles, adbPath, deviceSerial);
-
-      setStart(false);
-    };
-
-    startExecution();
-  }, [start]);
 
   const clearTerminal = () => {
     setTerminalOutput([]);
