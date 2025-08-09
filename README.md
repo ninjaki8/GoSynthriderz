@@ -1,4 +1,5 @@
 # README
+![Preview](preview.png)
 
 ## About
 
