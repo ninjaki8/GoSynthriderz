@@ -44,7 +44,7 @@ func (a *App) InstallAdbWindows() (string, error) {
 		return "", fmt.Errorf("failed to save zip: %v", err)
 	}
 
-	a.EventLog("Installing ADB...")
+	a.EventLog("Extracting ADB...")
 	fmt.Println("[INFO] Extracting ADB...")
 	if err := unzip(zipFile, filepath.Dir(destDir)); err != nil {
 		a.EventLog(fmt.Sprintf("failed to unzip: %v", err))
