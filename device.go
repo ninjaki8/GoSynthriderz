@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -107,7 +108,7 @@ func (a *App) GetSynthFilesCount(adbPath string, folderPath string, serial strin
 func (a *App) GetDeviceSynthFiles(adbPath string, folderPath string, serial string) map[string]bool {
 	a.EventLog("Fetching existing beatmaps...")
 
-	cmd := exec.Command(adbPath, "-s", serial, "shell", "ls", folderPath)
+	cmd := exec.Command(adbPath, "-s", serial, "shell", "ls", "-1", folderPath)
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		HideWindow:    true,
 		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
@@ -118,11 +119,14 @@ func (a *App) GetDeviceSynthFiles(adbPath string, folderPath string, serial stri
 		return map[string]bool{}
 	}
 
-	lines := strings.Split(string(output), "\n")
+	// Handle both Unix (\n) and Windows (\r\n) line endings
+	lines := strings.FieldsFunc(string(output), func(c rune) bool {
+		return c == '\n' || c == '\r'
+	})
 
 	synthFileNamesMap := make(map[string]bool)
 	for _, line := range lines {
-		trimmed := strings.TrimSpace(line)
+		trimmed := strings.Trim(strings.TrimSpace(line), "\r\n")
 		if trimmed != "" {
 			synthFileNamesMap[trimmed] = true
 		}
@@ -132,26 +136,36 @@ func (a *App) GetDeviceSynthFiles(adbPath string, folderPath string, serial stri
 	return synthFileNamesMap
 }
 
-func (a *App) PushBeatmap(adbPath string, filePath string, deviceSerial string, remoteDir string) error {
+func (a *App) PushBeatmap(adbPath string, tmpPath string, fileName string, deviceSerial string, remoteDir string) error {
 	if deviceSerial == "" {
 		return fmt.Errorf("device serial empty")
 	}
 
 	// Push to device
-	cmd := exec.Command(adbPath, "-s", deviceSerial, "push", filePath, remoteDir)
+	destFullPath := path.Join(remoteDir, fileName)
+	cmd := exec.Command(adbPath, "-s", deviceSerial, "push", tmpPath, destFullPath)
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		HideWindow:    true,
 		CreationFlags: 0x08000000, // CREATE_NO_WINDOW
 	}
+
+	// Get both stdout and stderr
 	output, err := cmd.CombinedOutput()
+
+	// Always log the push result (success or failure)
+	pushOutput := strings.TrimSpace(string(output))
+	if pushOutput != "" {
+		a.EventLog(fmt.Sprintf("ADB Push: %s", pushOutput))
+	}
+
 	if err != nil {
 		return fmt.Errorf("adb push failed: %v\nOutput: %s", err, string(output))
 	}
 
 	// Clean up
-	err = os.Remove(filePath)
+	err = os.Remove(tmpPath)
 	if err != nil {
-		fmt.Printf("[WARNING] Failed to delete temp file %s: %v\n", filePath, err)
+		fmt.Printf("[WARNING] Failed to delete temp file %s: %v\n", tmpPath, err)
 	}
 
 	return nil

@@ -32,7 +32,7 @@ export function InstallAdbWindows():Promise<string>;
 
 export function IsQuestUsbConnected():Promise<boolean>;
 
-export function PushBeatmap(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+export function PushBeatmap(arg1:string,arg2:string,arg3:string,arg4:string,arg5:string):Promise<void>;
 
 export function StartAdbServer(arg1:string):Promise<void>;
 

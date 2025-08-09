@@ -6,33 +6,34 @@ export const useFolder = (adbPath, questStatus, deviceSerial) => {
   const [folderStatus, setFolderStatus] = useState(false);
   const [folderData, setFolderData] = useState({});
 
-  useEffect(() => {
+  // Move checkFolder here, outside useEffect so you can return it
+  const checkFolder = async () => {
     if (!adbPath || !deviceSerial) return;
 
-    const checkFolder = async () => {
-      try {
-        const folder = await GetSynthridersFolder();
-        const customSongs = await AdbRemoteDirExists(adbPath, deviceSerial, folder);
-        setCustomSongsDir(folder);
-        setFolderStatus(customSongs);
+    try {
+      const folder = await GetSynthridersFolder();
+      const customSongs = await AdbRemoteDirExists(adbPath, deviceSerial, folder);
+      setCustomSongsDir(folder);
+      setFolderStatus(customSongs);
 
-        let countFiles = 0;
-        if (customSongs) {
-          countFiles = await GetSynthFilesCount(adbPath, folder, deviceSerial);
-        }
-
-        const folderData = {
-          name: "CustomSongs",
-          path: folder,
-          lastChecked: new Date().toLocaleTimeString(),
-          fileCount: countFiles,
-        };
-        setFolderData(folderData);
-      } catch (error) {
-        console.error("Error calling synthriders folder functions", error);
+      let countFiles = 0;
+      if (customSongs) {
+        countFiles = await GetSynthFilesCount(adbPath, folder, deviceSerial);
       }
-    };
 
+      const folderData = {
+        name: "CustomSongs",
+        path: folder,
+        lastChecked: new Date().toLocaleTimeString(),
+        fileCount: countFiles,
+      };
+      setFolderData(folderData);
+    } catch (error) {
+      console.error("Error calling synthriders folder functions", error);
+    }
+  };
+
+  useEffect(() => {
     checkFolder();
   }, [adbPath, questStatus, deviceSerial]);
 
@@ -40,5 +41,6 @@ export const useFolder = (adbPath, questStatus, deviceSerial) => {
     folderData,
     folderStatus,
     customSongsDir,
+    checkFolder,
   };
 };

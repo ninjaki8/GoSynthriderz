@@ -62,8 +62,8 @@ export function IsQuestUsbConnected() {
   return window['go']['main']['App']['IsQuestUsbConnected']();
 }
 
-export function PushBeatmap(arg1, arg2, arg3, arg4) {
-  return window['go']['main']['App']['PushBeatmap'](arg1, arg2, arg3, arg4);
+export function PushBeatmap(arg1, arg2, arg3, arg4, arg5) {
+  return window['go']['main']['App']['PushBeatmap'](arg1, arg2, arg3, arg4, arg5);
 }
 
 export function StartAdbServer(arg1) {

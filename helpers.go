@@ -28,7 +28,7 @@ func (a *App) SyncNewBeatmaps(allPages []BeatmapPage, synthFilesMap map[string]b
 			}
 
 			// Push file to device
-			err = a.PushBeatmap(adbPath, filePath, serial, SYNTHRIDERS_FOLDER)
+			err = a.PushBeatmap(adbPath, filePath, bm.Filename, serial, SYNTHRIDERS_FOLDER)
 			if err != nil {
 				a.EventLog(fmt.Sprintf("Error: %v", err))
 			} else {
