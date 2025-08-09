@@ -1,20 +1,45 @@
-# README
-![Preview](preview.png)
+# Quest Sync 🎧
 
-## About
+**Quest Sync** is a windows desktop application for managing and syncing custom songs (and other files) with your **Meta Quest 3** headset.  
+Built with [Wails](https://wails.io/) (Go + React), it provides a clean, modern interface with real-time device info, status monitoring, and seamless ADB integration.
 
-This is the official Wails React template.
+![Quest Sync Preview](./preview.png)
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+---
 
-## Live Development
+## ✨ Features
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+- **Automatic ADB Setup**  
+  - Detects if Android Debug Bridge is installed.  
+  - Windows: Download and install automatically to a common location.  
+  - Linux: Checks if `android-tools` is installed.
 
-## Building
+- **Quest 3 Device Detection**  
+  - Shows connection status with a visual badge.  
+  - Displays detailed device info:  
+    - Model, serial number, manufacturer, software version  
+    - Battery level with color-coded indicator  
+    - Storage usage with progress bar
 
-To build a redistributable, production mode package, use `wails build`.
+- **Custom Songs Folder Check**  
+  - Detects your songs directory on the headset.  
+  - Displays space usage and file count.
+
+- **One-Click Sync**  
+  - Start syncing maps/files with one button.  
+  - Real-time log output with color-coded status (success, warning, error).
+
+- **Modern Dashboard UI**  
+  - Tailwind CSS styling  
+  - Lucide React icons  
+  - Dark theme  
+  - Status badges for quick at-a-glance info
+
+---
+
+## 📦 Installation
+
+### Windows
+1. Download the latest release from the [Releases page](https://github.com/ninjaki8/GoSynthriderz/releases).
+2. Run the executable.  
+3. If ADB is missing, click **Download Latest** in the app.
