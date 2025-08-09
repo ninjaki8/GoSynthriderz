@@ -1,6 +1,6 @@
 // React
 import { useState, useEffect, useRef } from "react";
-import { Menu, Server, Settings, AlertCircle, Download, Folder, RectangleGoggles } from "lucide-react";
+import { Server, Settings, AlertCircle, Download, Folder, RectangleGoggles, RefreshCcw } from "lucide-react";
 import "./App.css";
 
 // Hooks
@@ -10,6 +10,7 @@ import { useAdbPath } from "./hooks/useAdbPath";
 import { useFolder } from "./hooks/useFolder";
 import { useTerminal } from "./hooks/useTerminal";
 import { InstallAdbWindows } from "../wailsjs/go/main/App";
+import { Quit } from "../wailsjs/runtime";
 
 // Components
 import SyncCard from "./components/SyncCard";
@@ -21,7 +22,8 @@ export default function AppLayout() {
   const [start, setStart] = useState(false);
   const [activeSection, setActiveSection] = useState("Dashboard");
   const terminalRef = useRef(null);
-
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef(null);
   const appInfo = { version: "v1.2", author: "ninjaki8" };
   const menuItems = ["Dashboard", "ADB Server", "Quest Device", "Songs Folder"];
 
@@ -37,6 +39,17 @@ export default function AppLayout() {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
   }, [terminalOutput]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const installAdb = async () => {
     const installPath = await InstallAdbWindows();
@@ -78,7 +91,7 @@ export default function AppLayout() {
       <header className="flex items-center h-14 px-5 border-b border-white/10 bg-black/70 backdrop-blur-sm">
         <div className="flex items-center gap-4">
           <div className="p-2 rounded-md bg-white/10">
-            <Menu className="w-5 h-5 text-gray-300" />
+            <RefreshCcw className="w-5 h-5 text-gray-300" />
           </div>
           <h1 className="text-lg font-semibold tracking-wide">Quest Sync</h1>
           <span className="text-xs text-gray-400 ml-1 lowercase">companion</span>
@@ -91,9 +104,26 @@ export default function AppLayout() {
           <StatusBadge icon={RectangleGoggles} status={questStatus} trueText="Quest 3" falseText="No Quest 3" />
           <StatusBadge icon={Folder} status={folderStatus} trueText="Custom Songs" falseText="No Custom Songs" />
 
-          <button className="ml-3 p-2 rounded-md hover:bg-white/10 transition-colors" title="Settings" aria-label="Settings">
-            <Settings className="w-5 h-5 text-gray-300" />
-          </button>
+          {/* Settings button */}
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setOpen((prev) => !prev)}
+              className="p-2 rounded-md hover:bg-white/10 transition-colors cursor-pointer"
+              title="Settings"
+              aria-label="Settings"
+            >
+              <Settings className="w-5 h-5 text-gray-300" />
+            </button>
+
+            {/* Dropdown menu */}
+            {open && (
+              <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
+                <button onClick={() => Quit()} className="block w-full px-4 py-2 text-left text-red-400 hover:bg-gray-700">
+                  Exit
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
